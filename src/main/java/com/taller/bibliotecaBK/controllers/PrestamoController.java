@@ -1,14 +1,22 @@
 package com.taller.bibliotecaBK.controllers;
 
-import com.taller.bibliotecaBK.models.Prestamo;
-import com.taller.bibliotecaBK.services.PrestamoService;
-import com.taller.bibliotecaBK.repositories.PrestamoRepository; // Importante
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired; // Importante
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.taller.bibliotecaBK.models.Prestamo;
+import com.taller.bibliotecaBK.repositories.PrestamoRepository;
+import com.taller.bibliotecaBK.services.PrestamoService;
 
 @RestController
 @RequestMapping("/api/prestamos")
@@ -42,7 +50,8 @@ public class PrestamoController {
     // --- NUEVO: Ver todas las reservas (Panel Docente/Admin) ---
     @GetMapping("/reservas")
     public List<Prestamo> obtenerTodasLasReservas() {
-        return prestamoRepository.findAll();
+        // Solo pendientes para aprobar
+        return prestamoRepository.findByEstado(Prestamo.EstadoPrestamo.RESERVADA);
     }
 
     // --- NUEVO: Aprobar una reserva (Panel Docente/Admin) ---
