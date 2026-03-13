@@ -43,4 +43,30 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
         }
     }
+
+    // Endpoint para Registrar nuevos usuarios (Opción 2 - Puntos Extra)
+    @PostMapping("/registro")
+    public ResponseEntity<?> registrarUsuario(@RequestBody Usuario nuevoUsuario) {
+        // 1. Verificamos si el correo ya existe para no tener duplicados
+        if (usuarioRepository.findByEmail(nuevoUsuario.getEmail()).isPresent()) {
+            return ResponseEntity.badRequest().body("El correo ya está registrado en el sistema");
+        }
+
+        try {
+            // --- NUEVO BLINDAJE: Si el frontend no envía el rol, le ponemos ESTUDIANTE por defecto ---
+            if (nuevoUsuario.getTipoUsuario() == null) {
+                nuevoUsuario.setTipoUsuario(Usuario.TipoUsuario.ESTUDIANTE);
+            }
+
+            // 2. Le asignamos la fecha y hora actual de registro
+            nuevoUsuario.setFechaRegistro(java.time.LocalDateTime.now());
+
+            // 3. Guardamos el usuario en la base de datos
+            Usuario usuarioGuardado = usuarioRepository.save(nuevoUsuario);
+
+            return ResponseEntity.ok(usuarioGuardado);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error al registrar el usuario: " + e.getMessage());
+        }
+    }
 }
